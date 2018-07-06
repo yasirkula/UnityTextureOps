@@ -110,7 +110,49 @@ public static class TextureOps
 	#region Save/Load Functions
 	public static bool SaveImage( Texture2D sourceTex, string imagePath )
 	{
-		return SaveImage( IsJpeg( imagePath ) ? sourceTex.EncodeToJPG( 100 ) : sourceTex.EncodeToPNG(), imagePath );
+		bool isJpeg = IsJpeg( imagePath );
+		byte[] sourceBytes = null;
+
+		try
+		{
+			sourceBytes = isJpeg ? sourceTex.EncodeToJPG( 100 ) : sourceTex.EncodeToPNG();
+		}
+		catch( UnityException )
+		{
+			// Texture is marked as non-readable, create a readable copy and save it instead
+			Debug.LogWarning( "Saving non-readable textures is slower than saving readable textures" );
+
+			Texture2D sourceTexReadable = null;
+			bool temp = T_MarkNonReadable;
+			try
+			{
+				T_MarkNonReadable = false;
+				sourceTexReadable = Scale( sourceTex, sourceTex.width, sourceTex.height, sourceTex.format );
+			}
+			finally
+			{
+				T_MarkNonReadable = temp;
+			}
+
+			if( sourceTexReadable == null )
+				return false;
+
+			try
+			{
+				sourceBytes = isJpeg ? sourceTexReadable.EncodeToJPG( 100 ) : sourceTexReadable.EncodeToPNG();
+			}
+			catch( Exception e )
+			{
+				Debug.LogException( e );
+				return false;
+			}
+			finally
+			{
+				Object.DestroyImmediate( sourceTexReadable );
+			}
+		}
+
+		return SaveImage( sourceBytes, imagePath );
 	}
 
 	public static bool SaveImage( byte[] sourceBytes, string imagePath )
@@ -381,7 +423,7 @@ public static class TextureOps
 
 	private static bool IsJpeg( string imagePath )
 	{
-		if( imagePath == null )
+		if( string.IsNullOrEmpty( imagePath ) )
 			return false;
 
 		string pathLower = imagePath.ToLowerInvariant();

@@ -52,7 +52,7 @@ iOS setup is normally handled automatically via a post processor script but, if 
 
 `bool TextureOps.T_LinearSpace = false`: determines whether the returned textures will use linear color space or gamma color space. Gamma space is the Unity-specified default value.
 
-`bool TextureOps.T_MarkNonReadable = true`: determines whether or not the returned textures will be marked as non-readable. Such textures consume less memory but don't support read/write operations such as *GetPixels*/*SetPixels* or *TextureOps.SaveImage*.
+`bool TextureOps.T_MarkNonReadable = true`: determines whether or not the returned textures will be marked as non-readable. Such textures consume less memory but don't support read/write operations such as *GetPixels*/*SetPixels* and have slower *TextureOps.SaveImage* performance.
 
 ## Example Code
 
@@ -66,12 +66,15 @@ void Start()
 	Texture2D loadedImage = TextureOps.LoadImage( Path.Combine( desktopDir, "image.jpeg" ) );
 	if( loadedImage != null )
 	{
-		TextureOps.T_MarkNonReadable = false; // Otherwise scaledImage won't work with SaveImage function
+		// Although non-readable textures use less memory, they are slower to save than read/write enabled textures,
+		// so disable this setting temporarily for better SaveImage performance
+		TextureOps.T_MarkNonReadable = false;
+
 		Texture2D scaledImage = TextureOps.ScaleFill( loadedImage, 512, 512, Color.red );
 		if( scaledImage != null )
 			TextureOps.SaveImage( scaledImage, Path.Combine( desktopDir, "image_new.jpeg" ) );
 
-		TextureOps.T_MarkNonReadable = true; // Restore its value for better memory usage
+		TextureOps.T_MarkNonReadable = true; // Restore its value
 
 		// Destroy procedural textures that are not needed anymore (otherwise, they'll continue consuming memory)
 		DestroyImmediate( loadedImage );
