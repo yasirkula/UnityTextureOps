@@ -72,7 +72,7 @@ void Start()
 
 		Texture2D scaledImage = TextureOps.ScaleFill( loadedImage, 512, 512, Color.red );
 		if( scaledImage != null )
-			TextureOps.SaveImage( scaledImage, Path.Combine( desktopDir, "image_new.jpeg" ) );
+			Debug.Log( "Save result: " + TextureOps.SaveImage( scaledImage, Path.Combine( desktopDir, "image_new.jpeg" ) ) );
 
 		TextureOps.T_MarkNonReadable = true; // Restore its value
 
