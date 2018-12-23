@@ -63,7 +63,7 @@ public class SlidePuzzleManager : MonoBehaviour
 		slotsParent.aspectRatio = columnCount / (float) rowCount;
 
 		// Slice puzzleTexture (starts from top-left corner)
-		Texture2D[] slices = TextureOps.Slice( puzzleTexture, sliceSize, sliceSize );
+		Texture2D[] slices = TextureOps.Slice( puzzleTexture, sliceSize, sliceSize, options: new TextureOps.Options( false, false, true ) );
 		for( int i = 0; i < slices.Length; i++ )
 			slices[i].wrapMode = TextureWrapMode.Clamp; // To avoid artifacts at edges
 

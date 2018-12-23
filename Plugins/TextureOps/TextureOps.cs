@@ -9,6 +9,20 @@ public static class TextureOps
 	public enum ImageOrientation { Unknown = -1, Normal = 0, Rotate90 = 1, Rotate180 = 2, Rotate270 = 3, FlipHorizontal = 4, Transpose = 5, FlipVertical = 6, Transverse = 7 };
 
 	#region Inner Classes/Structs
+	public struct Options
+	{
+		public readonly bool generateMipmaps;
+		public readonly bool linearColorSpace;
+		public readonly bool markNonReadable;
+
+		public Options( bool generateMipmaps, bool linearColorSpace, bool markNonReadable )
+		{
+			this.generateMipmaps = generateMipmaps;
+			this.linearColorSpace = linearColorSpace;
+			this.markNonReadable = markNonReadable;
+		}
+	}
+
 	public struct ImageProperties
 	{
 		public readonly int width;
@@ -101,10 +115,6 @@ public static class TextureOps
 #endif
 	#endregion
 
-	public static bool T_GenerateMipmaps = true;
-	public static bool T_LinearSpace = false;
-	public static bool T_MarkNonReadable = true;
-
 	private static Material sliceMaterial = null;
 
 	#region Save/Load Functions
@@ -123,16 +133,7 @@ public static class TextureOps
 			Debug.LogWarning( "Saving non-readable textures is slower than saving readable textures" );
 
 			Texture2D sourceTexReadable = null;
-			bool temp = T_MarkNonReadable;
-			try
-			{
-				T_MarkNonReadable = false;
-				sourceTexReadable = Scale( sourceTex, sourceTex.width, sourceTex.height, sourceTex.format );
-			}
-			finally
-			{
-				T_MarkNonReadable = temp;
-			}
+			sourceTexReadable = Scale( sourceTex, sourceTex.width, sourceTex.height, sourceTex.format, new Options( false, false, false ) );
 
 			if( sourceTexReadable == null )
 				return false;
@@ -177,13 +178,13 @@ public static class TextureOps
 		return true;
 	}
 
-	public static Texture2D LoadImage( byte[] imageBytes, TextureFormat format = TextureFormat.RGBA32 )
+	public static Texture2D LoadImage( byte[] imageBytes, TextureFormat format = TextureFormat.RGBA32, Options options = new Options() )
 	{
 		if( imageBytes == null || imageBytes.Length == 0 )
 			throw new ArgumentException( "Parameter 'imageBytes' is null or empty!" );
 
-		Texture2D result = new Texture2D( 2, 2, format, T_GenerateMipmaps, T_LinearSpace );
-		if( !result.LoadImage( imageBytes, T_MarkNonReadable ) )
+		Texture2D result = new Texture2D( 2, 2, format, options.generateMipmaps, options.linearColorSpace );
+		if( !result.LoadImage( imageBytes, options.markNonReadable ) )
 		{
 			Object.DestroyImmediate( result );
 			result = null;
@@ -192,7 +193,7 @@ public static class TextureOps
 		return result;
 	}
 
-	public static Texture2D LoadImage( string imagePath, int maxSize = -1 )
+	public static Texture2D LoadImage( string imagePath, int maxSize = -1, Options options = new Options() )
 	{
 		if( string.IsNullOrEmpty( imagePath ) )
 			throw new ArgumentException( "Parameter 'imagePath' is null or empty!" );
@@ -212,11 +213,11 @@ public static class TextureOps
 #endif
 
 		TextureFormat format = IsJpeg( imagePath ) ? TextureFormat.RGB24 : TextureFormat.RGBA32;
-		Texture2D result = new Texture2D( 2, 2, format, T_GenerateMipmaps, T_LinearSpace );
+		Texture2D result = new Texture2D( 2, 2, format, options.generateMipmaps, options.linearColorSpace );
 
 		try
 		{
-			if( !result.LoadImage( File.ReadAllBytes( loadPath ), T_MarkNonReadable ) )
+			if( !result.LoadImage( File.ReadAllBytes( loadPath ), options.markNonReadable ) )
 			{
 				Object.DestroyImmediate( result );
 				return null;
@@ -259,7 +260,7 @@ public static class TextureOps
 	#endregion
 
 	#region Texture Operations
-	public static Texture2D Scale( Texture sourceTex, int targetWidth, int targetHeight, TextureFormat format = TextureFormat.RGBA32 )
+	public static Texture2D Scale( Texture sourceTex, int targetWidth, int targetHeight, TextureFormat format = TextureFormat.RGBA32, Options options = new Options() )
 	{
 		if( sourceTex == null )
 			throw new ArgumentException( "Parameter 'sourceTex' is null!" );
@@ -274,9 +275,9 @@ public static class TextureOps
 			Graphics.Blit( sourceTex, rt );
 			RenderTexture.active = rt;
 
-			result = new Texture2D( targetWidth, targetHeight, format, T_GenerateMipmaps, T_LinearSpace );
+			result = new Texture2D( targetWidth, targetHeight, format, options.generateMipmaps, options.linearColorSpace );
 			result.ReadPixels( new Rect( 0, 0, targetWidth, targetHeight ), 0, 0, false );
-			result.Apply( T_GenerateMipmaps, T_MarkNonReadable );
+			result.Apply( options.generateMipmaps, options.markNonReadable );
 		}
 		catch( Exception e )
 		{
@@ -294,7 +295,7 @@ public static class TextureOps
 		return result;
 	}
 
-	public static Texture2D ScaleFill( Texture sourceTex, int targetWidth, int targetHeight, Color32 fillColor, TextureFormat format = TextureFormat.RGBA32 )
+	public static Texture2D ScaleFill( Texture sourceTex, int targetWidth, int targetHeight, Color32 fillColor, TextureFormat format = TextureFormat.RGBA32, Options options = new Options() )
 	{
 		if( sourceTex == null )
 			throw new ArgumentException( "Parameter 'sourceTex' is null!" );
@@ -321,10 +322,10 @@ public static class TextureOps
 			for( int i = background.Length - 1; i >= 0; i-- )
 				background[i] = fillColor;
 
-			result = new Texture2D( targetWidth, targetHeight, format, T_GenerateMipmaps, T_LinearSpace );
+			result = new Texture2D( targetWidth, targetHeight, format, options.generateMipmaps, options.linearColorSpace );
 			result.SetPixels32( background );
 			result.ReadPixels( new Rect( 0, 0, preferredWidth, preferredHeight ), sourceX, sourceY, false );
-			result.Apply( T_GenerateMipmaps, T_MarkNonReadable );
+			result.Apply( options.generateMipmaps, options.markNonReadable );
 		}
 		catch( Exception e )
 		{
@@ -342,7 +343,7 @@ public static class TextureOps
 		return result;
 	}
 
-	public static Texture2D[] Slice( Texture sourceTex, int sliceTexWidth, int sliceTexHeight, TextureFormat format = TextureFormat.RGBA32 )
+	public static Texture2D[] Slice( Texture sourceTex, int sliceTexWidth, int sliceTexHeight, TextureFormat format = TextureFormat.RGBA32, Options options = new Options() )
 	{
 		if( sourceTex == null )
 			throw new ArgumentException( "Parameter 'sourceTex' is null!" );
@@ -381,9 +382,9 @@ public static class TextureOps
 					Graphics.Blit( sourceTex, rt, sliceMaterial );
 					RenderTexture.active = rt;
 
-					result[resultIndex] = new Texture2D( sliceTexWidth, sliceTexHeight, format, T_GenerateMipmaps, T_LinearSpace );
+					result[resultIndex] = new Texture2D( sliceTexWidth, sliceTexHeight, format, options.generateMipmaps, options.linearColorSpace );
 					result[resultIndex].ReadPixels( new Rect( 0, 0, sliceTexWidth, sliceTexHeight ), 0, 0, false );
-					result[resultIndex].Apply( T_GenerateMipmaps, T_MarkNonReadable );
+					result[resultIndex].Apply( options.generateMipmaps, options.markNonReadable );
 
 					resultIndex++;
 				}
