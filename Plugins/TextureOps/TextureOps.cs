@@ -129,28 +129,15 @@ public static class TextureOps
 		}
 		catch( UnityException )
 		{
-			// Texture is marked as non-readable, create a readable copy and save it instead
-			Debug.LogWarning( "Saving non-readable textures is slower than saving readable textures" );
-
-			Texture2D sourceTexReadable = null;
-			sourceTexReadable = Scale( sourceTex, sourceTex.width, sourceTex.height, sourceTex.format, new Options( false, false, false ) );
-
-			if( sourceTexReadable == null )
+			sourceBytes = GetTextureBytesFromCopy( sourceTex, isJpeg );
+			if( sourceBytes == null )
 				return false;
-
-			try
-			{
-				sourceBytes = isJpeg ? sourceTexReadable.EncodeToJPG( 100 ) : sourceTexReadable.EncodeToPNG();
-			}
-			catch( Exception e )
-			{
-				Debug.LogException( e );
+		}
+		catch( ArgumentException )
+		{
+			sourceBytes = GetTextureBytesFromCopy( sourceTex, isJpeg );
+			if( sourceBytes == null )
 				return false;
-			}
-			finally
-			{
-				Object.DestroyImmediate( sourceTexReadable );
-			}
 		}
 
 		return SaveImage( sourceBytes, imagePath );
@@ -406,6 +393,32 @@ public static class TextureOps
 		}
 
 		return result;
+	}
+	#endregion
+
+	#region Helper Functions
+	public static byte[] GetTextureBytesFromCopy( Texture2D sourceTex, bool isJpeg )
+	{
+		// Texture is marked as non-readable, create a readable copy and save it instead
+		Debug.LogWarning( "Saving non-readable textures is slower than saving readable textures" );
+
+		Texture2D sourceTexReadable = Scale( sourceTex, sourceTex.width, sourceTex.height, sourceTex.format, new Options( false, false, false ) );
+		if( sourceTexReadable == null )
+			return null;
+
+		try
+		{
+			return isJpeg ? sourceTexReadable.EncodeToJPG( 100 ) : sourceTexReadable.EncodeToPNG();
+		}
+		catch( Exception e )
+		{
+			Debug.LogException( e );
+			return null;
+		}
+		finally
+		{
+			Object.DestroyImmediate( sourceTexReadable );
+		}
 	}
 	#endregion
 
