@@ -5,6 +5,7 @@ using Debug = UnityEngine.Debug;
 
 public class SlidePuzzleManager : MonoBehaviour
 {
+#pragma warning disable 0649
 	[SerializeField]
 	private AspectRatioFitter slotsParent;
 
@@ -17,6 +18,7 @@ public class SlidePuzzleManager : MonoBehaviour
 
 	[SerializeField]
 	private Texture puzzleTexture;
+#pragma warning restore 0649
 
 	private RectTransform[][] slots; // Slots hold pieces
 	private SlidePuzzlePiece[][] pieces;
