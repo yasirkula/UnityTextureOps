@@ -4,6 +4,8 @@
 
 This plugin helps you save/load textures and perform simple operations on them, like scale and slice. It also contains an example sliding puzzle project to demonstrate the slice operation.
 
+Simply import [TextureOps.unitypackage](https://github.com/yasirkula/UnityTextureOps/releases) to your project and you are good to go!
+
 ### iOS Setup
 
 iOS setup is normally handled automatically via a post processor script but, if you wish, you can execute the following steps to set up the plugin manually:
