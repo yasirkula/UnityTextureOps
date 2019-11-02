@@ -63,7 +63,7 @@ extern UIViewController* UnityGetGLViewController();
 	int orientationUnity;
 	int orientation = [metadata[2] intValue];
 	
-	// To understand the magic numbers, see ImageOrientation enum in NativeGallery.cs
+	// To understand the magic numbers, see ImageOrientation enum in TextureOps.cs
 	// and http://sylvana.net/jpegcrop/exif_orientation.html
 	if (orientation == 1)
 		orientationUnity = 0;
@@ -141,18 +141,30 @@ extern UIViewController* UnityGetGLViewController();
 }
 
 + (char *)loadImageAtPath:(NSString *)path tempFilePath:(NSString *)tempFilePath maximumSize:(int)maximumSize {
-	NSArray *metadata = [self getImageMetadata:path];
-	int orientationInt = [metadata[2] intValue];  // 1: correct orientation, [1,8]: valid orientation range
-	if (( orientationInt <= 1 || orientationInt > 8 ) && [metadata[0] intValue] <= maximumSize && [metadata[1] intValue] <= maximumSize)
-		return [self getCString:path];
+	// Check if the image can be loaded by Unity without requiring a conversion to PNG
+	// Credit: https://stackoverflow.com/a/12048937/2373034
+	NSString *extension = [path pathExtension];
+	BOOL conversionNeeded = [extension caseInsensitiveCompare:@"jpg"] != NSOrderedSame && [extension caseInsensitiveCompare:@"jpeg"] != NSOrderedSame && [extension caseInsensitiveCompare:@"png"] != NSOrderedSame;
+
+	if (!conversionNeeded) {
+		// Check if the image needs to be processed at all
+		NSArray *metadata = [self getImageMetadata:path];
+		int orientationInt = [metadata[2] intValue];  // 1: correct orientation, [1,8]: valid orientation range
+		if (orientationInt == 1 && [metadata[0] intValue] <= maximumSize && [metadata[1] intValue] <= maximumSize)
+			return [self getCString:path];
+	}
 	
 	UIImage *image = [UIImage imageWithContentsOfFile:path];
 	if (image == nil)
 		return [self getCString:path];
 	
 	UIImage *scaledImage = [self scaleImage:image maxSize:maximumSize];
-	if (scaledImage != image) {
-		[UIImagePNGRepresentation(scaledImage) writeToFile:tempFilePath atomically:YES];
+	if (conversionNeeded || scaledImage != image) {
+		if (![UIImagePNGRepresentation(scaledImage) writeToFile:tempFilePath atomically:YES]) {
+			NSLog(@"Error creating scaled image");
+			return [self getCString:path];
+		}
+		
 		return [self getCString:tempFilePath];
 	}
 	else
