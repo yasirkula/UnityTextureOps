@@ -394,6 +394,41 @@ public static class TextureOps
 
 		return result;
 	}
+
+	public static Texture2D Crop(Texture sourceTex, int x, int y, int width, int height, TextureFormat format = TextureFormat.RGBA32, Options options = new Options())
+	{
+		if( sourceTex == null )
+			throw new ArgumentException( "Parameter 'sourceTex' is null!" );
+
+		Texture2D result = null;
+
+		RenderTexture rt = RenderTexture.GetTemporary( sourceTex.width, sourceTex.height );
+		RenderTexture activeRT = RenderTexture.active;
+
+		try
+		{
+			Graphics.Blit( sourceTex, rt );
+			RenderTexture.active = rt;
+
+			result = new Texture2D( width, height, format, options.generateMipmaps, options.linearColorSpace );
+			result.ReadPixels( new Rect( x, sourceTex.height - y - height, width, height ), 0, 0, false );
+			result.Apply( options.generateMipmaps, options.markNonReadable );
+		}
+		catch( Exception e )
+		{
+			Debug.LogException( e );
+
+			Object.Destroy( result );
+			result = null;
+		}
+		finally
+		{
+			RenderTexture.active = activeRT;
+			RenderTexture.ReleaseTemporary( rt );
+		}
+
+		return result;
+	}
 	#endregion
 
 	#region Helper Functions
