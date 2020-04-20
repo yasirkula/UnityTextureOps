@@ -48,6 +48,8 @@ Simply import [TextureOps.unitypackage](https://github.com/yasirkula/UnityTextur
 
 `Texture2D[] TextureOps.Slice( Texture2D sourceTex, int sliceTexWidth, int sliceTexHeight, TextureFormat format = TextureFormat.RGBA32, TextureOps.Options options )`: slices *sourceTex* into smaller textures and returns these textures in an array. sourceTex is sliced row-by-row, starting from top-left corner. Note that if a 100-pixel-wide texture is sliced into 30-pixel-wide textures, rightmost 10 pixels will be discarded. Likewise, if a 100-pixel-wide texture is sliced into 101-pixel-wide textures, the returned array will be empty.
 
+`Texture2D[] TextureOps.Crop( Texture2D, sourceTex, int x, int y, int width, int height, TextureFormat format = TextureFormat.RGBA32, TextureOps.Options options )`: cuts a rectangle out of the source texture into a new texture.
+
 ### C. Utility Functions
 
 `TextureOps.ImageProperties TextureOps.GetImageProperties( string imagePath )`: *[Android & iOS only]* returns an *ImageProperties* instance that holds the width, height, mime type and EXIF orientation information of an image file without creating a *Texture2D* object. Mime type will be *null*, if it can't be determined.
