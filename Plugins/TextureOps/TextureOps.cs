@@ -247,6 +247,54 @@ public static class TextureOps
 	#endregion
 
 	#region Texture Operations
+	public static Texture2D Crop( Texture sourceTex, int leftOffset, int topOffset, int width, int height, TextureFormat format = TextureFormat.RGBA32, Options options = new Options() )
+	{
+		if( sourceTex == null )
+			throw new ArgumentException( "Parameter 'sourceTex' is null!" );
+		
+		if( width <= 0 || width > sourceTex.width )
+			width = sourceTex.width;
+		if( height <= 0 || height > sourceTex.height )
+			height = sourceTex.height;
+		if( leftOffset <= 0 )
+			leftOffset = 0;
+		else if( leftOffset + width > sourceTex.width )
+			leftOffset = sourceTex.width - width;
+		if( topOffset <= 0 )
+			topOffset = 0;
+		else if( topOffset + height > sourceTex.height )
+			topOffset = sourceTex.height - height;
+
+		Texture2D result = null;
+
+		RenderTexture rt = RenderTexture.GetTemporary( sourceTex.width, sourceTex.height );
+		RenderTexture activeRT = RenderTexture.active;
+
+		try
+		{
+			Graphics.Blit( sourceTex, rt );
+			RenderTexture.active = rt;
+
+			result = new Texture2D( width, height, format, options.generateMipmaps, options.linearColorSpace );
+			result.ReadPixels( new Rect( leftOffset, sourceTex.height - topOffset - height, width, height ), 0, 0, false );
+			result.Apply( options.generateMipmaps, options.markNonReadable );
+		}
+		catch( Exception e )
+		{
+			Debug.LogException( e );
+
+			Object.Destroy( result );
+			result = null;
+		}
+		finally
+		{
+			RenderTexture.active = activeRT;
+			RenderTexture.ReleaseTemporary( rt );
+		}
+
+		return result;
+	}
+	
 	public static Texture2D Scale( Texture sourceTex, int targetWidth, int targetHeight, TextureFormat format = TextureFormat.RGBA32, Options options = new Options() )
 	{
 		if( sourceTex == null )
@@ -329,7 +377,7 @@ public static class TextureOps
 
 		return result;
 	}
-
+	
 	public static Texture2D[] Slice( Texture sourceTex, int sliceTexWidth, int sliceTexHeight, TextureFormat format = TextureFormat.RGBA32, Options options = new Options() )
 	{
 		if( sourceTex == null )
@@ -384,41 +432,6 @@ public static class TextureOps
 			for( int i = result.Length - 1; i >= 0; i-- )
 				Object.Destroy( result[i] );
 
-			result = null;
-		}
-		finally
-		{
-			RenderTexture.active = activeRT;
-			RenderTexture.ReleaseTemporary( rt );
-		}
-
-		return result;
-	}
-
-	public static Texture2D Crop(Texture sourceTex, int x, int y, int width, int height, TextureFormat format = TextureFormat.RGBA32, Options options = new Options())
-	{
-		if( sourceTex == null )
-			throw new ArgumentException( "Parameter 'sourceTex' is null!" );
-
-		Texture2D result = null;
-
-		RenderTexture rt = RenderTexture.GetTemporary( sourceTex.width, sourceTex.height );
-		RenderTexture activeRT = RenderTexture.active;
-
-		try
-		{
-			Graphics.Blit( sourceTex, rt );
-			RenderTexture.active = rt;
-
-			result = new Texture2D( width, height, format, options.generateMipmaps, options.linearColorSpace );
-			result.ReadPixels( new Rect( x, sourceTex.height - y - height, width, height ), 0, 0, false );
-			result.Apply( options.generateMipmaps, options.markNonReadable );
-		}
-		catch( Exception e )
-		{
-			Debug.LogException( e );
-
-			Object.Destroy( result );
 			result = null;
 		}
 		finally
