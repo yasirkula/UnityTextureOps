@@ -42,6 +42,8 @@ Simply import [TextureOps.unitypackage](https://github.com/yasirkula/UnityTextur
 
 **NOTE:** on some Android devices, these functions may not work correctly when called with a *sourceTex* that was created in the same frame. Therefore, if you'd like to call these functions immediately after *LoadImage*, consider instead waiting for at least one frame. You can use `yield return null;` in a coroutine to wait for one frame.
 
+`Texture2D[] TextureOps.Crop( Texture2D, sourceTex, int leftOffset, int topOffset, int width, int height, TextureFormat format = TextureFormat.RGBA32, TextureOps.Options options )`: crops sourceTex and returns the cropped texture.
+
 `Texture2D TextureOps.Scale( Texture2D sourceTex, int targetWidth, int targetHeight, TextureFormat format = TextureFormat.RGBA32, TextureOps.Options options )`: scales *sourceTex* to the specified size and returns the scaled texture. sourceTex's aspect ratio may not be preserved.
 
 `Texture2D TextureOps.ScaleFill( Texture2D sourceTex, int targetWidth, int targetHeight, Color32 fillColor, TextureFormat format = TextureFormat.RGBA32, TextureOps.Options options )`: scales *sourceTex* to the specified size and returns the scaled texture. sourceTex's aspect ratio is preserved and blank space is filled with *fillColor*.
