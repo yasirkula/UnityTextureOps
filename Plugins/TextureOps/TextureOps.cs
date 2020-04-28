@@ -251,15 +251,17 @@ public static class TextureOps
 	{
 		if( sourceTex == null )
 			throw new ArgumentException( "Parameter 'sourceTex' is null!" );
-		
+
 		if( width <= 0 || width > sourceTex.width )
 			width = sourceTex.width;
 		if( height <= 0 || height > sourceTex.height )
 			height = sourceTex.height;
+
 		if( leftOffset <= 0 )
 			leftOffset = 0;
 		else if( leftOffset + width > sourceTex.width )
 			leftOffset = sourceTex.width - width;
+
 		if( topOffset <= 0 )
 			topOffset = 0;
 		else if( topOffset + height > sourceTex.height )
@@ -294,7 +296,7 @@ public static class TextureOps
 
 		return result;
 	}
-	
+
 	public static Texture2D Scale( Texture sourceTex, int targetWidth, int targetHeight, TextureFormat format = TextureFormat.RGBA32, Options options = new Options() )
 	{
 		if( sourceTex == null )
@@ -377,7 +379,7 @@ public static class TextureOps
 
 		return result;
 	}
-	
+
 	public static Texture2D[] Slice( Texture sourceTex, int sliceTexWidth, int sliceTexHeight, TextureFormat format = TextureFormat.RGBA32, Options options = new Options() )
 	{
 		if( sourceTex == null )

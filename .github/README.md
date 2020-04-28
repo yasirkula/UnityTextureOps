@@ -2,9 +2,13 @@
 
 ![SlidingPuzzleExample](screenshots/1.jpg)
 
-This plugin helps you save/load textures and perform simple operations on them, like scale and slice. It also contains an example sliding puzzle project to demonstrate the slice operation.
+**Forum Thread:** https://forum.unity.com/threads/texture-ops-a-basic-image-processing-plugin-for-unity-open-source.539065/
 
-[Support the Developer ☕](https://yasirkula.itch.io/unity3d)
+**[Support the Developer ☕](https://yasirkula.itch.io/unity3d)**
+
+## ABOUT
+
+This plugin helps you save/load textures and perform simple operations on them, like scale and slice. It also contains an example sliding puzzle project to demonstrate the slice operation.
 
 ### iOS Setup
 
@@ -16,9 +20,16 @@ iOS setup is normally handled automatically via a post processor script but, if 
 
 ![OtherLinkerFlags](screenshots/2.png)
 
-## How To
+## INSTALLATION
 
-Simply import [TextureOps.unitypackage](https://github.com/yasirkula/UnityTextureOps/releases) to your project and you are good to go!
+There are 3 ways to install this plugin:
+
+- import [TextureOps.unitypackage](https://github.com/yasirkula/UnityTextureOps/releases) via *Assets-Import Package*
+- clone/[download](https://github.com/yasirkula/UnityTextureOps/archive/master.zip) this repository and move the *Plugins* folder to your Unity project's *Assets* folder
+- *(via Package Manager)* add the following line to *Packages/manifest.json*:
+  - `"com.yasirkula.textureops": "https://github.com/yasirkula/UnityTextureOps.git",`
+
+## HOW TO
 
 **NOTE:** functions that return a *Texture2D* or *Texture2D[]* may return *null*, if something goes wrong.
 
@@ -42,7 +53,7 @@ Simply import [TextureOps.unitypackage](https://github.com/yasirkula/UnityTextur
 
 **NOTE:** on some Android devices, these functions may not work correctly when called with a *sourceTex* that was created in the same frame. Therefore, if you'd like to call these functions immediately after *LoadImage*, consider instead waiting for at least one frame. You can use `yield return null;` in a coroutine to wait for one frame.
 
-`Texture2D[] TextureOps.Crop( Texture2D, sourceTex, int leftOffset, int topOffset, int width, int height, TextureFormat format = TextureFormat.RGBA32, TextureOps.Options options )`: crops sourceTex and returns the cropped texture.
+`Texture2D TextureOps.Crop( Texture2D, sourceTex, int leftOffset, int topOffset, int width, int height, TextureFormat format = TextureFormat.RGBA32, TextureOps.Options options )`: crops *sourceTex* and returns the cropped texture.
 
 `Texture2D TextureOps.Scale( Texture2D sourceTex, int targetWidth, int targetHeight, TextureFormat format = TextureFormat.RGBA32, TextureOps.Options options )`: scales *sourceTex* to the specified size and returns the scaled texture. sourceTex's aspect ratio may not be preserved.
 
@@ -56,7 +67,7 @@ Simply import [TextureOps.unitypackage](https://github.com/yasirkula/UnityTextur
 
 `TextureOps.VideoProperties TextureOps.GetVideoProperties( string videoPath )`: *[Android & iOS only]* returns a *VideoProperties* instance that holds the width, height, duration (in milliseconds) and rotation information of a video file. To play a video in correct orientation, you should rotate it by *rotation* degrees clockwise. For a 90-degree or 270-degree rotated video, values of *width* and *height* should be swapped to get the display size of the video.
 
-## Example Code
+## EXAMPLE CODE
 
 The following code loads "*DESKTOP_DIR/image.jpeg*" into a Texture, applies *TextureOps.ScaleFill* to it and then saves it as "*DESKTOP_DIR/image_new.jpeg*". See *SlidePuzzleScene* demo scene for an example usage of *TextureOps.Slice*.
 
