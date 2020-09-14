@@ -452,7 +452,7 @@ public static class TextureOps
 		// Texture is marked as non-readable, create a readable copy and save it instead
 		Debug.LogWarning( "Saving non-readable textures is slower than saving readable textures" );
 
-		Texture2D sourceTexReadable = Scale( sourceTex, sourceTex.width, sourceTex.height, sourceTex.format, new Options( false, false, false ) );
+		Texture2D sourceTexReadable = Scale( sourceTex, sourceTex.width, sourceTex.height, isJpeg ? TextureFormat.RGB24 : TextureFormat.RGBA32, new Options( false, false, false ) );
 		if( sourceTexReadable == null )
 			return null;
 
@@ -491,7 +491,7 @@ public static class TextureOps
 			return false;
 
 		string pathLower = imagePath.ToLowerInvariant();
-		return pathLower.EndsWith( ".jpeg" ) || pathLower.EndsWith( ".jpg" );
+		return pathLower.EndsWith( ".jpeg", StringComparison.OrdinalIgnoreCase ) || pathLower.EndsWith( ".jpg", StringComparison.OrdinalIgnoreCase );
 	}
 
 	public static ImageProperties GetImageProperties( string imagePath )
