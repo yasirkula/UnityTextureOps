@@ -2,5 +2,8 @@
   "name": "com.yasirkula.textureops",
   "displayName": "Texture Ops",
   "version": "1.1.1",
+  "documentationUrl": "https://github.com/yasirkula/UnityTextureOps",
+  "changelogUrl": "https://github.com/yasirkula/UnityTextureOps/commits/master",
+  "licensesUrl": "https://github.com/yasirkula/UnityTextureOps/blob/master/LICENSE.txt",
   "description": "This plugin helps you save/load textures and perform simple operations on them, like scale and slice. It also contains an example sliding puzzle project to demonstrate the slice operation."
 }
