@@ -1,13 +1,25 @@
-﻿#if UNITY_IOS
+﻿using System.IO;
 using UnityEditor;
+using UnityEngine;
+#if UNITY_IOS
 using UnityEditor.Callbacks;
-using System.IO;
 using UnityEditor.iOS.Xcode;
 #endif
 
 public class TOPostProcessBuild
 {
 	private const bool ENABLED = true;
+
+	[InitializeOnLoadMethod]
+	public static void ValidatePlugin()
+	{
+		string jarPath = "Assets/Plugins/TextureOps/Android/TextureOps.jar";
+		if( File.Exists( jarPath ) )
+		{
+			Debug.Log( "Deleting obsolete " + jarPath );
+			AssetDatabase.DeleteAsset( jarPath );
+		}
+	}
 
 #if UNITY_IOS
 #pragma warning disable 0162

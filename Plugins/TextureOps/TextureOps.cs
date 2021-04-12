@@ -523,7 +523,7 @@ public static class TextureOps
 				mimeType = properties[2].Trim();
 				if( mimeType.Length == 0 )
 				{
-					String extension = Path.GetExtension( imagePath ).ToLowerInvariant();
+					string extension = Path.GetExtension( imagePath ).ToLowerInvariant();
 					if( extension == ".png" )
 						mimeType = "image/png";
 					else if( extension == ".jpg" || extension == ".jpeg" )
