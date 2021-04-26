@@ -11,7 +11,7 @@ iOS setup is normally handled automatically via a post processor script but, if 
 
 - set the value of ENABLED to false in TOPostProcessBuild.cs
 - build your project
-- insert "-framework MobileCoreServices -framework ImageIO" to the "Other Linker Flags" of Unity-iPhone Target
+- insert "-framework MobileCoreServices -framework ImageIO" to the "Other Linker Flags" of Unity-iPhone Target (and UnityFramework Target on Unity 2019.3 or newer)
 
 3. SCRIPTING API
 Please see the online documentation for a more in-depth documentation of the Scripting API: https://github.com/yasirkula/UnityTextureOps
