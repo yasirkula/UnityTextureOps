@@ -3,15 +3,18 @@
 Online documentation & example code available at: https://github.com/yasirkula/UnityTextureOps
 E-mail: yasirkula@gmail.com
 
+
 1. ABOUT
 This plugin helps you save/load textures and perform simple operations on them, like scale and slice.
+
 
 2. iOS SETUP
 iOS setup is normally handled automatically via a post processor script but, if you wish, you can execute the following steps to set up the plugin manually:
 
-- set the value of ENABLED to false in TOPostProcessBuild.cs
+- set the value of 'Automated Setup' to false at 'Project Settings/yasirkula/Texture Ops'
 - build your project
 - insert "-framework MobileCoreServices -framework ImageIO" to the "Other Linker Flags" of Unity-iPhone Target (and UnityFramework Target on Unity 2019.3 or newer)
+
 
 3. SCRIPTING API
 Please see the online documentation for a more in-depth documentation of the Scripting API: https://github.com/yasirkula/UnityTextureOps

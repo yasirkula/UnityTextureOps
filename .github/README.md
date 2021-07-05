@@ -12,13 +12,7 @@ This plugin helps you save/load textures and perform simple operations on them, 
 
 ### iOS Setup
 
-iOS setup is normally handled automatically via a post processor script but, if you wish, you can execute the following steps to set up the plugin manually:
-
-- set the value of **ENABLED** to *false* in *TOPostProcessBuild.cs*
-- build your project
-- insert `-framework MobileCoreServices -framework ImageIO` to the **Other Linker Flags** of *Unity-iPhone Target* (and *UnityFramework Target* on Unity 2019.3 or newer):
-
-![OtherLinkerFlags](screenshots/2.png)
+iOS setup is handled automatically via a post processor script. If you rather want to set up the plugin manually, see: https://github.com/yasirkula/UnityTextureOps/wiki/Manual-Setup-for-iOS
 
 ## INSTALLATION
 
