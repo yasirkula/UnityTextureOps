@@ -4,6 +4,8 @@
 
 **Forum Thread:** https://forum.unity.com/threads/texture-ops-a-basic-image-processing-plugin-for-unity-open-source.539065/
 
+**Discord:** https://discord.gg/UJJt549AaV
+
 **[Support the Developer ☕](https://yasirkula.itch.io/unity3d)**
 
 ## ABOUT
