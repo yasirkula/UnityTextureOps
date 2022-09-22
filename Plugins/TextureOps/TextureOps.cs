@@ -2,6 +2,11 @@
 using System.Globalization;
 using System.IO;
 using UnityEngine;
+#if UNITY_2018_4_OR_NEWER && !NATIVE_GALLERY_DISABLE_ASYNC_FUNCTIONS
+using System.Threading.Tasks;
+using Unity.Collections;
+using UnityEngine.Networking;
+#endif
 using Object = UnityEngine.Object;
 
 public static class TextureOps
@@ -122,7 +127,7 @@ public static class TextureOps
 	public static bool SaveImage( Texture2D sourceTex, string imagePath )
 	{
 		bool isJpeg = IsJpeg( imagePath );
-		byte[] sourceBytes = null;
+		byte[] sourceBytes;
 
 		try
 		{
@@ -245,6 +250,149 @@ public static class TextureOps
 
 		return result;
 	}
+
+#if UNITY_2018_4_OR_NEWER && !TEXTURE_OPS_DISABLE_ASYNC_FUNCTIONS
+	public static async Task<Texture2D> LoadImageAsync( string imagePath, int maxSize = -1, Options options = new Options() )
+	{
+		if( string.IsNullOrEmpty( imagePath ) )
+			throw new ArgumentException( "Parameter 'imagePath' is null or empty!" );
+
+		if( !File.Exists( imagePath ) )
+			throw new FileNotFoundException( "File not found at " + imagePath );
+
+		if( maxSize <= 0 )
+			maxSize = SystemInfo.maxTextureSize;
+
+#if !UNITY_EDITOR && UNITY_ANDROID
+		string loadPath = await Task.Run( () =>
+		{
+			if( AndroidJNI.AttachCurrentThread() != 0 )
+			{
+				Debug.LogWarning( "Couldn't attach JNI thread, calling native function on the main thread" );
+				return null;
+			}
+			else
+			{
+				try
+				{
+					return AJC.CallStatic<string>( "LoadImageAtPath", Context, imagePath, TemporaryImagePath, maxSize );
+				}
+				finally
+				{
+					AndroidJNI.DetachCurrentThread();
+				}
+			}
+		} );
+		
+		if( string.IsNullOrEmpty( loadPath ) )
+			loadPath = AJC.CallStatic<string>( "LoadImageAtPath", Context, imagePath, TemporaryImagePath, maxSize );
+#elif !UNITY_EDITOR && UNITY_IOS
+		string loadPath = await Task.Run( () => _TextureOps_LoadImageAtPath( imagePath, TemporaryImagePath, maxSize ) );
+#else
+		string loadPath = imagePath;
+#endif
+
+		Texture2D result = null;
+
+		if( !options.linearColorSpace )
+		{
+			using( UnityWebRequest www = UnityWebRequestTexture.GetTexture( "file://" + loadPath, options.markNonReadable && !options.generateMipmaps ) )
+			{
+				UnityWebRequestAsyncOperation asyncOperation = www.SendWebRequest();
+				while( !asyncOperation.isDone )
+					await Task.Yield();
+
+#if UNITY_2020_1_OR_NEWER
+				if( www.result != UnityWebRequest.Result.Success )
+#else
+				if( www.isNetworkError || www.isHttpError )
+#endif
+				{
+					Debug.LogWarning( "Couldn't use UnityWebRequest to load image, falling back to LoadImage: " + www.error );
+				}
+				else
+				{
+					Texture2D texture = DownloadHandlerTexture.GetContent( www );
+
+					if( !options.generateMipmaps )
+						result = texture;
+					else
+					{
+						Texture2D mipmapTexture = null;
+						try
+						{
+							// Generate a Texture with mipmaps enabled
+							// Credits: https://forum.unity.com/threads/generate-mipmaps-at-runtime-for-a-texture-loaded-with-unitywebrequest.644842/#post-7571809
+							NativeArray<byte> textureData = texture.GetRawTextureData<byte>();
+
+							mipmapTexture = new Texture2D( texture.width, texture.height, texture.format, true );
+#if UNITY_2019_3_OR_NEWER
+							mipmapTexture.SetPixelData( textureData, 0 );
+#else
+							NativeArray<byte> mipmapTextureData = mipmapTexture.GetRawTextureData<byte>();
+							NativeArray<byte>.Copy( textureData, mipmapTextureData, textureData.Length );
+							mipmapTexture.LoadRawTextureData( mipmapTextureData );
+#endif
+							mipmapTexture.Apply( true, options.markNonReadable );
+
+							result = mipmapTexture;
+						}
+						catch( Exception e )
+						{
+							Debug.LogException( e );
+
+							if( mipmapTexture )
+								Object.DestroyImmediate( mipmapTexture );
+						}
+						finally
+						{
+							Object.DestroyImmediate( texture );
+						}
+					}
+				}
+			}
+		}
+
+		if( !result ) // Fallback to Texture2D.LoadImage if something goes wrong
+		{
+			string extension = Path.GetExtension( imagePath ).ToLowerInvariant();
+			TextureFormat format = ( extension == ".jpg" || extension == ".jpeg" ) ? TextureFormat.RGB24 : TextureFormat.RGBA32;
+
+			result = new Texture2D( 2, 2, format, options.generateMipmaps, options.linearColorSpace );
+
+			try
+			{
+				if( !result.LoadImage( File.ReadAllBytes( loadPath ), options.markNonReadable ) )
+				{
+					Debug.LogWarning( "Couldn't load image at path: " + loadPath );
+
+					Object.DestroyImmediate( result );
+					return null;
+				}
+			}
+			catch( Exception e )
+			{
+				Debug.LogException( e );
+
+				Object.DestroyImmediate( result );
+				return null;
+			}
+			finally
+			{
+				if( loadPath != imagePath )
+				{
+					try
+					{
+						File.Delete( loadPath );
+					}
+					catch { }
+				}
+			}
+		}
+
+		return result;
+	}
+#endif
 	#endregion
 
 	#region Texture Operations

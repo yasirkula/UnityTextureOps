@@ -1,4 +1,4 @@
-= Texture Ops =
+= Texture Ops (v1.2.0) =
 
 Online documentation & example code available at: https://github.com/yasirkula/UnityTextureOps
 E-mail: yasirkula@gmail.com
@@ -32,6 +32,7 @@ Texture2D TextureOps.LoadImage( byte[] imageBytes, TextureFormat format = Textur
 
 // maxSize: determines the maximum size of the returned Texture2D in pixels. Larger textures will be down-scaled. If untouched, its value will be set to SystemInfo.maxTextureSize. It is recommended to set a proper maxSize for better performance
 Texture2D TextureOps.LoadImage( string imagePath, int maxSize = -1, TextureOps.Options options ): creates a Texture2D from the specified image file and returns it.
+async Task<Texture2D> TextureOps.LoadImageAsync( string imagePath, int maxSize = -1, TextureOps.Options options ): creates a Texture2D from the specified image file and returns it.
 
 //// TEXTURE OPERATIONS ////
 // NOTE: on some Android devices, these functions may not work correctly when called with a 'sourceTex' that was created in the same frame. Therefore, if you'd like to call these functions immediately after 'LoadImage', consider instead waiting for at least one frame. You can use `yield return null;` in a coroutine to wait for one frame.
