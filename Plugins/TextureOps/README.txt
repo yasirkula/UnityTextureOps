@@ -1,4 +1,4 @@
-= Texture Ops (v1.2.0) =
+= Texture Ops (v1.2.1) =
 
 Online documentation & example code available at: https://github.com/yasirkula/UnityTextureOps
 E-mail: yasirkula@gmail.com

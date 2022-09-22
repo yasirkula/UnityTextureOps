@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.IO;
 using UnityEngine;
-#if UNITY_2018_4_OR_NEWER && !NATIVE_GALLERY_DISABLE_ASYNC_FUNCTIONS
+#if UNITY_2018_4_OR_NEWER && !TEXTURE_OPS_DISABLE_ASYNC_FUNCTIONS
 using System.Threading.Tasks;
 using Unity.Collections;
 using UnityEngine.Networking;
