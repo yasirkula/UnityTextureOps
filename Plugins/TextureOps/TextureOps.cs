@@ -263,6 +263,10 @@ public static class TextureOps
 		if( maxSize <= 0 )
 			maxSize = SystemInfo.maxTextureSize;
 
+		// Create a local copy of TemporaryImagePath on the calling thread
+		// so that the getter in case of unininitialized TemporaryImagePath
+		// is evaluated on the calling thread
+		var tempPath = TemporaryImagePath;
 #if !UNITY_EDITOR && UNITY_ANDROID
 		string loadPath = await Task.Run( () =>
 		{
@@ -275,7 +279,7 @@ public static class TextureOps
 			{
 				try
 				{
-					return AJC.CallStatic<string>( "LoadImageAtPath", Context, imagePath, TemporaryImagePath, maxSize );
+					return AJC.CallStatic<string>( "LoadImageAtPath", Context, imagePath, tempPath, maxSize );
 				}
 				finally
 				{
@@ -285,9 +289,9 @@ public static class TextureOps
 		} );
 		
 		if( string.IsNullOrEmpty( loadPath ) )
-			loadPath = AJC.CallStatic<string>( "LoadImageAtPath", Context, imagePath, TemporaryImagePath, maxSize );
+			loadPath = AJC.CallStatic<string>( "LoadImageAtPath", Context, imagePath, tempPath, maxSize );
 #elif !UNITY_EDITOR && UNITY_IOS
-		string loadPath = await Task.Run( () => _TextureOps_LoadImageAtPath( imagePath, TemporaryImagePath, maxSize ) );
+		string loadPath = await Task.Run( () => _TextureOps_LoadImageAtPath( imagePath, tempPath, maxSize ) );
 #else
 		string loadPath = imagePath;
 #endif
