@@ -264,6 +264,7 @@ public static class TextureOps
 			maxSize = SystemInfo.maxTextureSize;
 
 #if !UNITY_EDITOR && UNITY_ANDROID
+		string temporaryImagePath = TemporaryImagePath; // Must be accessed from main thread
 		string loadPath = await Task.Run( () =>
 		{
 			if( AndroidJNI.AttachCurrentThread() != 0 )
@@ -275,7 +276,7 @@ public static class TextureOps
 			{
 				try
 				{
-					return AJC.CallStatic<string>( "LoadImageAtPath", Context, imagePath, TemporaryImagePath, maxSize );
+					return AJC.CallStatic<string>( "LoadImageAtPath", Context, imagePath, temporaryImagePath, maxSize );
 				}
 				finally
 				{
@@ -285,9 +286,10 @@ public static class TextureOps
 		} );
 		
 		if( string.IsNullOrEmpty( loadPath ) )
-			loadPath = AJC.CallStatic<string>( "LoadImageAtPath", Context, imagePath, TemporaryImagePath, maxSize );
+			loadPath = AJC.CallStatic<string>( "LoadImageAtPath", Context, imagePath, temporaryImagePath, maxSize );
 #elif !UNITY_EDITOR && UNITY_IOS
-		string loadPath = await Task.Run( () => _TextureOps_LoadImageAtPath( imagePath, TemporaryImagePath, maxSize ) );
+		string temporaryImagePath = TemporaryImagePath; // Must be accessed from main thread
+		string loadPath = await Task.Run( () => _TextureOps_LoadImageAtPath( imagePath, temporaryImagePath, maxSize ) );
 #else
 		string loadPath = imagePath;
 #endif
