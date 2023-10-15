@@ -159,7 +159,10 @@ public static class TextureOps
 
 		try
 		{
-			Directory.CreateDirectory( Path.GetDirectoryName( imagePath ) );
+			string parentDirectoryPath = Path.GetDirectoryName( imagePath );
+			if( !Directory.Exists( parentDirectoryPath ) )
+				Directory.CreateDirectory( parentDirectoryPath );
+
 			File.WriteAllBytes( imagePath, sourceBytes );
 		}
 		catch( Exception e )
