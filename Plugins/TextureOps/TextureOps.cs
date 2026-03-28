@@ -409,7 +409,7 @@ public static class TextureOps
 
 		Texture2D result = null;
 
-		RenderTexture rt = RenderTexture.GetTemporary( sourceTex.width, sourceTex.height );
+        RenderTexture rt = RenderTexture.GetTemporary(sourceTex.width, sourceTex.height, 0, RenderTextureFormat.ARGB32);
 		RenderTexture activeRT = RenderTexture.active;
 
 		try
@@ -444,7 +444,7 @@ public static class TextureOps
 
 		Texture2D result = null;
 
-		RenderTexture rt = RenderTexture.GetTemporary( targetWidth, targetHeight );
+        RenderTexture rt = RenderTexture.GetTemporary(targetWidth, targetHeight, 0, RenderTextureFormat.ARGB32);
 		RenderTexture activeRT = RenderTexture.active;
 
 		try
@@ -487,7 +487,7 @@ public static class TextureOps
 		int sourceX = (int) ( ( targetWidth - preferredWidth ) * 0.5f );
 		int sourceY = (int) ( ( targetHeight - preferredHeight ) * 0.5f );
 
-		RenderTexture rt = RenderTexture.GetTemporary( preferredWidth, preferredHeight );
+        RenderTexture rt = RenderTexture.GetTemporary(preferredWidth, preferredHeight, 0, RenderTextureFormat.ARGB32);
 		RenderTexture activeRT = RenderTexture.active;
 
 		try
@@ -533,7 +533,7 @@ public static class TextureOps
 		float _1OverSourceWidth = 1f / sourceWidth;
 		float _1OverSourceHeight = 1f / sourceHeight;
 
-		RenderTexture rt = RenderTexture.GetTemporary( sliceTexWidth, sliceTexHeight );
+        RenderTexture rt = RenderTexture.GetTemporary(sliceTexWidth, sliceTexHeight, 0, RenderTextureFormat.ARGB32);
 		RenderTexture activeRT = RenderTexture.active;
 
 		Vector4 sliceParameters = new Vector4( 0, 0, sliceTexWidth * _1OverSourceWidth, sliceTexHeight * _1OverSourceHeight );
