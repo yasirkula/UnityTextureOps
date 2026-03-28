@@ -92,8 +92,8 @@ public class TOPostProcessBuild
 			pbxProject.ReadFromFile( pbxProjectPath );
 
 			string targetGUID = pbxProject.GetUnityFrameworkTargetGuid();
-			pbxProject.AddBuildProperty( targetGUID, "OTHER_LDFLAGS", "-framework MobileCoreServices" );
-			pbxProject.AddBuildProperty( targetGUID, "OTHER_LDFLAGS", "-framework ImageIO" );
+			pbxProject.AddFrameworkToProject( targetGUID, "MobileCoreServices.framework", false );
+			pbxProject.AddFrameworkToProject( targetGUID, "ImageIO.framework", false );
 
 			File.WriteAllText( pbxProjectPath, pbxProject.WriteToString() );
 		}
