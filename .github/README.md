@@ -47,7 +47,7 @@ There are 4 ways to install this plugin:
 `Texture2D TextureOps.LoadImage( string imagePath, int maxSize = -1, TextureOps.Options options )`: creates a *Texture2D* from the specified image file and returns it. On Android & iOS, if the orientation of the source image is rotated (e.g. when the image is captured with the camera in portrait mode), then its orientation will be corrected while loading the image into the texture.
 - **maxSize** determines the maximum size of the returned Texture2D in pixels. Larger textures will be down-scaled. If untouched, its value will be set to *SystemInfo.maxTextureSize*. It is recommended to set a proper maxSize for better performance
 
-`async Task<Texture2D> TextureOps.LoadImageAsync( string imagePath, int maxSize = -1, TextureOps.Options options )`: asynchronous variant of *LoadImage* (requires Unity 2018.4 or later). Works best when *linearColorSpace* is *false*. It's also slightly faster when *generateMipmaps* is *false*. Note that it isn't possible to load multiple images simultaneously using this function.
+`async Task<Texture2D> TextureOps.LoadImageAsync( string imagePath, int maxSize = -1, TextureOps.Options options )`: asynchronous variant of *LoadImage*. Works best when *linearColorSpace* is *false*. It's also slightly faster when *generateMipmaps* is *false*. Note that it isn't possible to load multiple images simultaneously using this function.
 
 ### B. Texture Operations
 

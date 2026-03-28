@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
-using UnityEngine;
-#if UNITY_2018_4_OR_NEWER && !TEXTURE_OPS_DISABLE_ASYNC_FUNCTIONS
 using System.Threading.Tasks;
 using Unity.Collections;
+using UnityEngine;
 using UnityEngine.Networking;
-#endif
 using Object = UnityEngine.Object;
 
 public static class TextureOps
@@ -254,7 +252,6 @@ public static class TextureOps
 		return result;
 	}
 
-#if UNITY_2018_4_OR_NEWER && !TEXTURE_OPS_DISABLE_ASYNC_FUNCTIONS
 	public static async Task<Texture2D> LoadImageAsync( string imagePath, int maxSize = -1, Options options = new Options() )
 	{
 		if( string.IsNullOrEmpty( imagePath ) )
@@ -307,11 +304,7 @@ public static class TextureOps
 				while( !asyncOperation.isDone )
 					await Task.Yield();
 
-#if UNITY_2020_1_OR_NEWER
 				if( www.result != UnityWebRequest.Result.Success )
-#else
-				if( www.isNetworkError || www.isHttpError )
-#endif
 				{
 					Debug.LogWarning( "Couldn't use UnityWebRequest to load image, falling back to LoadImage: " + www.error );
 				}
@@ -331,13 +324,7 @@ public static class TextureOps
 							NativeArray<byte> textureData = texture.GetRawTextureData<byte>();
 
 							mipmapTexture = new Texture2D( texture.width, texture.height, texture.format, true );
-#if UNITY_2019_3_OR_NEWER
 							mipmapTexture.SetPixelData( textureData, 0 );
-#else
-							NativeArray<byte> mipmapTextureData = mipmapTexture.GetRawTextureData<byte>();
-							NativeArray<byte>.Copy( textureData, mipmapTextureData, textureData.Length );
-							mipmapTexture.LoadRawTextureData( mipmapTextureData );
-#endif
 							mipmapTexture.Apply( true, options.markNonReadable );
 
 							result = mipmapTexture;
@@ -397,7 +384,6 @@ public static class TextureOps
 
 		return result;
 	}
-#endif
 	#endregion
 
 	#region Texture Operations
