@@ -143,10 +143,14 @@ extern UIViewController* UnityGetGLViewController();
 	
 	CGFloat scaleRatio = scaleX < scaleY ? scaleX : scaleY;
 	CGRect imageRect = CGRectMake( 0, 0, width * scaleRatio, height * scaleRatio );
-	UIGraphicsBeginImageContextWithOptions( imageRect.size, !hasAlpha, image.scale );
-	[image drawInRect:imageRect];
-	image = UIGraphicsGetImageFromCurrentImageContext();
-	UIGraphicsEndImageContext();
+	UIGraphicsImageRendererFormat *format = [image imageRendererFormat];
+	format.opaque = !hasAlpha;
+	format.scale = image.scale;
+	UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:imageRect.size format:format];
+	image = [renderer imageWithActions:^( UIGraphicsImageRendererContext* _Nonnull myContext )
+	{
+		[image drawInRect:imageRect];
+	}];
 	
 	return image;
 }
