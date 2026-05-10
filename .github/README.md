@@ -27,6 +27,12 @@ There are 4 ways to install this plugin:
 - *(via [OpenUPM](https://openupm.com))* after installing [openupm-cli](https://github.com/openupm/openupm-cli), run the following command:
   - `openupm add com.yasirkula.textureops`
 
+## FAQ
+
+- **Android build fails with error message "D8: java.lang.NullPointerException Failed to transform TextureOps-.aar"**
+
+The plugin is using "Gradle version" `7.5.1` and "Android Gradle plug-in version" `7.4.2`. Make sure your Unity version is compatible: https://docs.unity3d.com/2021.3/Documentation/Manual/android-gradle-overview.html
+
 ## HOW TO
 
 **NOTE:** functions that return a *Texture2D* or *Texture2D[]* may return *null*, if something goes wrong.

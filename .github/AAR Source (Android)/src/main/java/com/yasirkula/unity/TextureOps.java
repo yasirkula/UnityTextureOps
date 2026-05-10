@@ -315,7 +315,13 @@ public class TextureOps
 		}
 		finally
 		{
-			metadataRetriever.release();
+			try
+			{
+				metadataRetriever.release();
+			}
+			catch( Exception e )
+			{
+			}
 		}
 	}
 }
